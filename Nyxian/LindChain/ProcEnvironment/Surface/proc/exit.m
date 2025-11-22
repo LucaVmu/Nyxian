@@ -17,10 +17,8 @@
  along with Nyxian. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#import <LindChain/ProcEnvironment/Surface/proc/exit.h>
+/*#import <LindChain/ProcEnvironment/Surface/proc/exit.h>
 #import <LindChain/ProcEnvironment/Surface/proc/fetch.h>
-#import <LindChain/ProcEnvironment/Surface/proc/replace.h>
-#import <LindChain/ProcEnvironment/Surface/proc/remove.h>
 #import <LindChain/ProcEnvironment/Surface/proc/def.h>
 #import <LindChain/ProcEnvironment/Surface/proc/helper.h>
 
@@ -78,7 +76,4 @@ ksurface_error_t proc_exit_for_pid(pid_t pid)
     }
     
     return error;
-#else
-    return kSurfaceErrorUndefined;
-#endif /* HOST_ENV */
-}
+}*/

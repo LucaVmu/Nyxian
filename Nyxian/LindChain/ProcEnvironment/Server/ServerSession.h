@@ -23,10 +23,11 @@
 #import <Foundation/Foundation.h>
 #import <LindChain/Private/UIKitPrivate.h>
 #import <LindChain/ProcEnvironment/Server/ServerProtocol.h>
+#import <LindChain/ProcEnvironment/Surface/surface.h>
 
 @interface ServerSession: NSObject <ServerProtocol>
 
-@property (nonatomic) pid_t processIdentifier;
+@property (nonatomic) ksurface_proc_t *proc;
 @property (nonatomic) dispatch_once_t handoffProcessIdentifierOnce;
 @property (nonatomic) dispatch_once_t handoffSurfaceOnce;
 @property (nonatomic) dispatch_once_t makeWindowVisibleOnce;

@@ -26,7 +26,7 @@
 #import <LindChain/ProcEnvironment/Surface/surface.h>
 #import <LindChain/ProcEnvironment/Surface/proc/proc.h>
 
-int proc_libproc_listallpids(void *buffer,
+/*int proc_libproc_listallpids(void *buffer,
                              int buffersize)
 {
     if(buffersize < 0)
@@ -162,3 +162,4 @@ void environment_libproc_init(void)
         litehook_rebind_symbol(LITEHOOK_REBIND_GLOBAL, kill, environment_proxy_proc_kill_process_identifier, nil);
     }
 }
+*/

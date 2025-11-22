@@ -21,9 +21,6 @@
 #define PROC_H
 
 #import <LindChain/ProcEnvironment/Surface/proc/def.h>
-#import <LindChain/ProcEnvironment/Surface/proc/append.h>
-#import <LindChain/ProcEnvironment/Surface/proc/replace.h>
-#import <LindChain/ProcEnvironment/Surface/proc/remove.h>
 #import <LindChain/ProcEnvironment/Surface/proc/new.h>
 #import <LindChain/ProcEnvironment/Surface/proc/fetch.h>
 #import <LindChain/ProcEnvironment/Surface/proc/exit.h>

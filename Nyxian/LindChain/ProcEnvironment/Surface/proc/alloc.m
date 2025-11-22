@@ -18,31 +18,52 @@
 */
 
 #import <LindChain/ProcEnvironment/Surface/proc/alloc.h>
-#import <LindChain/ProcEnvironment/Surface/proc/helper.h>
 
-ksurface_error_t proc_alloc_proc_v2(ksurface_proc_t **proc)
+bool proc_retain(ksurface_proc_obj_t *obj)
 {
-    if(proc == NULL) return kSurfaceErrorNullPtr;
-    
-    *proc = NULL;
-    
-    for(uint32_t i = 0; i < PROC_MAX; i++)
+    if(!__atomic_load_n(&obj->inUse, __ATOMIC_ACQUIRE))
     {
-        if((__atomic_exchange_n(&(surface->proc_info.proc[i].inUse), true, __ATOMIC_ACQUIRE) == 0))
+        return false;
+    }
+    __atomic_add_fetch(&obj->refcnt, 1, __ATOMIC_ACQ_REL);
+    if(!__atomic_load_n(&obj->inUse, __ATOMIC_ACQUIRE))
+    {
+        proc_release(obj);
+        return false;
+    }
+    return true;
+}
+
+bool proc_release(ksurface_proc_obj_t *obj)
+{
+    unsigned long old = __atomic_fetch_sub(&obj->refcnt, 1, __ATOMIC_ACQ_REL);
+    if(old == 1)
+    {
+        obj->inUse = false;
+        memset((void*)&obj->proc, 0, sizeof(obj->proc));
+        return true;
+    }
+    return false;
+}
+
+ksurface_error_t proc_alloc(ksurface_proc_obj_t **obj)
+{
+    if (!obj) return kSurfaceErrorNullPtr;
+    *obj = NULL;
+    
+    for (uint32_t i = 0; i < PROC_MAX; i++)
+    {
+        ksurface_proc_obj_t *nobj = &surface->proc_info.obj[i];
+        bool expected = false;
+        if(__atomic_compare_exchange_n(&nobj->inUse, &expected, true, false, __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE))
         {
-            seqlock_lock(&(surface->proc_info.proc[i].seqlock));
-            *proc = &surface->proc_info.proc[i];
-            memset(((char *)*proc) + sizeof(seqlock_t), 0, sizeof(ksurface_proc_t) - sizeof(seqlock_t));
-            seqlock_unlock(&(surface->proc_info.proc[i].seqlock));
-            break;
+            __atomic_store_n(&nobj->refcnt, 1, __ATOMIC_RELEASE);
+            seqlock_lock(&nobj->seqlock);
+            memset((void*)&nobj->proc, 0, sizeof(nobj->proc));
+            *obj = nobj;
+            return kSurfaceErrorSuccess;
         }
     }
     
-    return (*proc == NULL) ? kSurfaceErrorOutOfBounds : kSurfaceErrorSuccess;
-}
-
-ksurface_error_t proc_release_proc_v2(ksurface_proc_t *proc)
-{
-    if(proc == NULL) return kSurfaceErrorNullPtr;
-    return (__atomic_exchange_n(&(proc->inUse), false, __ATOMIC_RELEASE) == 0) ? kSurfaceErrorUndefined : kSurfaceErrorSuccess;
+    return kSurfaceErrorOutOfBounds;
 }

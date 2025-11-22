@@ -80,11 +80,11 @@ void environment_init(EnvironmentRole role,
         // Setting environment properties
         environmentRole = role;
         
-        environment_libproc_init();
+        //environment_libproc_init();
         environment_application_init();
         environment_posix_spawn_init();
         environment_fork_init();
-        environment_sysctl_init();
+        //environment_sysctl_init();
         environment_cred_init();
         
         if(environment_is_role(EnvironmentRoleGuest))

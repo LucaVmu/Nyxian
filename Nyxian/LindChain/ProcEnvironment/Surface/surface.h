@@ -56,7 +56,6 @@ typedef struct {
     PEEntitlement entitlements;
     
     /* Black magic, night walker~~ She haunts me like no other~~ */
-    dispatch_once_t removeOnce;
     __strong NSUUID *identifier;
     __strong NSExtension *extension;
     __strong RBSProcessHandle *handle;
@@ -71,14 +70,18 @@ typedef struct {
 
 /// Structure that holds process information
 typedef struct {
-    bool inUse;
-    bool isValid;
-    seqlock_t seqlock;
     void *parent;
     ksurface_proc_children_t children;
     kinfo_proc_t bsd;
     knyx_proc_t nyx;
 } ksurface_proc_t;
+
+typedef struct {
+    bool inUse;
+    seqlock_t seqlock;
+    unsigned long refcnt;
+    ksurface_proc_t proc;
+} ksurface_proc_obj_t;
 
 /// Host information
 typedef struct {
@@ -87,8 +90,7 @@ typedef struct {
 
 /// Process information
 typedef struct {
-    uint32_t proc_count;
-    ksurface_proc_t proc[PROC_MAX];
+    ksurface_proc_obj_t obj[PROC_MAX];
 } ksurface_proc_info_t;
 
 /// Structure that holds surface information and other structures

@@ -24,14 +24,13 @@
 #include <sys/sysctl.h>
 
 // MARK: If you wanna use CocoaTop you need to fix this one bug in the source code where it allocates SIZE_MAX on a NSMutableArray
-DEFINE_HOOK(sysctl, int, (int *name,
+/*DEFINE_HOOK(sysctl, int, (int *name,
                           u_int namelen,
                           void *__sized_by(*oldlenp) oldp,
                           size_t *oldlenp,
                           void *__sized_by(newlen) newp,
                           size_t newlen))
 {
-    /* KERN_MAXPROC fix */
     if(namelen == 2 && name[0] == CTL_KERN && name[1] == KERN_MAXPROC)
     {
         if(oldp && oldlenp && *oldlenp >= sizeof(int))
@@ -51,7 +50,6 @@ DEFINE_HOOK(sysctl, int, (int *name,
         return -1;
     }
     
-    /* KERN_PROC_ALL fix */
     if (namelen == 4 &&
         name[0] == CTL_KERN &&
         name[1] == KERN_PROC &&
@@ -86,7 +84,6 @@ DEFINE_HOOK(sysctl, int, (int *name,
         return 0;
     }
     
-    /* --- KERN_PROCARGS2 spoof --- */
     if (namelen == 3 &&
         name[0] == CTL_KERN &&
         name[1] == KERN_PROCARGS2)
@@ -118,3 +115,4 @@ void environment_sysctl_init(void)
         DO_HOOK_GLOBAL(sysctl)
     }
 }
+*/

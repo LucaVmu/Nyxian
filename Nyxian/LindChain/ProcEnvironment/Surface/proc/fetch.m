@@ -17,103 +17,30 @@
  along with Nyxian. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#import <LindChain/ProcEnvironment/Surface/proc/alloc.h>
 #import <LindChain/ProcEnvironment/Surface/proc/fetch.h>
-#import <LindChain/ProcEnvironment/Surface/proc/helper.h>
 #import <LindChain/ProcEnvironment/Surface/proc/def.h>
 
-static inline ksurface_error_t proc_for_pid_internal(pid_t pid,
-                                                     ksurface_proc_t *proc,
-                                                     bool use_lock)
-{
-    // Check to ensure its not a nullified surface or better said
-    if(surface == NULL || proc == NULL) return kSurfaceErrorNullPtr;
-    
-    // Preparing error
-    ksurface_error_t retval = kSurfaceErrorNotFound;
-    
-    // Sequence
-    unsigned long seq;
-    
-    // Beginning to spin, to hopefully find the processes requested
-    do
-    {
-        seq = proc_helper_read_begin(use_lock);
-        
-        // Iterating through all process structures
-        for(uint32_t i = 0; i < surface->proc_info.proc_count; i++)
-        {
-            // Checking if its the process structure were looking for
-            if(proc_getpid(surface->proc_info.proc[i]) == pid)
-            {
-                // Copying it to the process ptr passed
-                *proc = surface->proc_info.proc[i];
-                
-                // Setting return value to success
-                retval = kSurfaceErrorSuccess;
-                break;
-            }
-        }
-    }
-    while (proc_helper_read_retry(use_lock, seq));
-    
-    // Returning return value
-    return retval;
-}
-
-static inline ksurface_error_t proc_for_idx_internal(unsigned int idx,
-                                                     ksurface_proc_t *proc,
-                                                     bool use_lock)
-{
-    // Check to ensure its not a nullified surface or better said
-    if(surface == NULL || proc == NULL) return kSurfaceErrorNullPtr;
-    
-    // Preparing error
-    ksurface_error_t retval = kSurfaceErrorNotFound;
-    
-    // Sequence
-    unsigned long seq;
-    
-    // Beginning to spin, to hopefully find the processes requested
-    do
-    {
-        seq = proc_helper_read_begin(use_lock);
-        
-        // Checking if the index is within bounds
-        if(idx < surface->proc_info.proc_count)
-        {
-            // Copying process at index to the pointer provided
-            *proc = surface->proc_info.proc[idx];
-            
-            // Setting return value to succeed
-            retval = kSurfaceErrorSuccess;
-        }
-    }
-    while (proc_helper_read_retry(use_lock, seq));
-    
-    // Returning return value
-    return retval;
-}
-
 ksurface_error_t proc_for_pid(pid_t pid,
-                              ksurface_proc_t *proc)
+                              ksurface_proc_t **proc)
 {
-    return proc_for_pid_internal(pid, proc, true);
-}
-
-ksurface_error_t proc_for_pid_nolock(pid_t pid,
-                                     ksurface_proc_t *proc)
-{
-    return proc_for_pid_internal(pid, proc, false);
-}
-
-ksurface_error_t proc_for_index(unsigned int idx,
-                                ksurface_proc_t *proc)
-{
-    return proc_for_idx_internal(idx, proc, true);
-}
-
-ksurface_error_t proc_for_index_nolock(unsigned int idx,
-                                       ksurface_proc_t *proc)
-{
-    return proc_for_idx_internal(idx, proc, false);
+    if(proc == NULL) return kSurfaceErrorNullPtr;
+    
+    *proc = NULL;
+    
+    for(uint32_t i = 0; i < PROC_MAX; i++)
+    {
+        if(proc_retain(&(surface->proc_info.obj[i])))
+        {
+            unsigned long seq;
+            do {
+                seq = seqlock_read_begin(&(surface->proc_info.obj[i].seqlock));
+                
+                
+            } while (seqlock_read_retry(&(surface->proc_info.obj[i].seqlock), seq));
+            proc_release(&(surface->proc_info.obj[i]));
+        }
+    }
+    
+    return (*proc == NULL) ? kSurfaceErrorOutOfBounds : kSurfaceErrorSuccess;
 }

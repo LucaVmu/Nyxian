@@ -21,31 +21,31 @@
 #define PROC_DEF_H
 
 /// Helper macros
-#define proc_getpid(proc) proc.bsd.kp_proc.p_pid
-#define proc_getppid(proc) proc.bsd.kp_eproc.e_ppid
-#define proc_getentitlements(proc) proc.nyx.entitlements
+#define proc_getpid(obj) (obj)->proc.bsd.kp_proc.p_pid
+#define proc_getppid(obj) (obj)->proc.bsd.kp_eproc.e_ppid
+#define proc_getentitlements(obj) (obj)->proc.nyx.entitlements
 
-#define proc_setpid(proc, pid) proc.bsd.kp_proc.p_pid = pid
-#define proc_setppid(proc, ppid) proc.bsd.kp_proc.p_oppid = ppid; proc.bsd.kp_eproc.e_ppid = ppid; proc.bsd.kp_eproc.e_pgid = ppid
-#define proc_setentitlements(proc, entitlement) proc.nyx.entitlements = entitlement
+#define proc_setpid(obj, pid) (obj)->proc.bsd.kp_proc.p_pid = pid
+#define proc_setppid(obj, ppid) (obj)->proc.bsd.kp_proc.p_oppid = ppid; (obj)->proc.bsd.kp_eproc.e_ppid = ppid; (obj)->proc.bsd.kp_eproc.e_pgid = ppid
+#define proc_setentitlements(obj, entitlement) (obj)->proc.nyx.entitlements = entitlement
 
 /// UID Helper macros
-#define proc_getuid(proc) proc.bsd.kp_eproc.e_ucred.cr_uid
-#define proc_getruid(proc) proc.bsd.kp_eproc.e_pcred.p_ruid
-#define proc_getsvuid(proc) proc.bsd.kp_eproc.e_pcred.p_svuid
+#define proc_getuid(obj) (obj)->proc.bsd.kp_eproc.e_ucred.cr_uid
+#define proc_getruid(obj) (obj)->proc.bsd.kp_eproc.e_pcred.p_ruid
+#define proc_getsvuid(obj) (obj)->proc.bsd.kp_eproc.e_pcred.p_svuid
 
-#define proc_setuid(proc, uid) proc.bsd.kp_eproc.e_ucred.cr_uid = uid
-#define proc_setruid(proc, ruid) proc.bsd.kp_eproc.e_pcred.p_ruid = ruid
-#define proc_setsvuid(proc, svuid) proc.bsd.kp_eproc.e_pcred.p_svuid = svuid
+#define proc_setuid(obj, uid) (obj)->proc.bsd.kp_eproc.e_ucred.cr_uid = uid
+#define proc_setruid(obj, ruid) (obj)->proc.bsd.kp_eproc.e_pcred.p_ruid = ruid
+#define proc_setsvuid(obj, svuid) (obj)->proc.bsd.kp_eproc.e_pcred.p_svuid = svuid
 
 /// GID Helper macros
-#define proc_getgid(proc) proc.bsd.kp_eproc.e_ucred.cr_groups[0]
-#define proc_getrgid(proc) proc.bsd.kp_eproc.e_pcred.p_rgid
-#define proc_getsvgid(proc) proc.bsd.kp_eproc.e_pcred.p_svgid
+#define proc_getgid(obj) (obj)->proc.bsd.kp_eproc.e_ucred.cr_groups[0]
+#define proc_getrgid(obj) (obj)->proc.bsd.kp_eproc.e_pcred.p_rgid
+#define proc_getsvgid(obj) (obj)->proc.bsd.kp_eproc.e_pcred.p_svgid
 
-#define proc_setgid(proc, gid) proc.bsd.kp_eproc.e_ucred.cr_groups[0] = gid
-#define proc_setrgid(proc, rgid) proc.bsd.kp_eproc.e_pcred.p_rgid = rgid
-#define proc_setsvgid(proc, svgid) proc.bsd.kp_eproc.e_pcred.p_svgid = svgid
+#define proc_setgid(obj, gid) (obj)->proc.bsd.kp_eproc.e_ucred.cr_groups[0] = gid
+#define proc_setrgid(obj, rgid) (obj)->proc.bsd.kp_eproc.e_pcred.p_rgid = rgid
+#define proc_setsvgid(obj, svgid) (obj)->proc.bsd.kp_eproc.e_pcred.p_svgid = svgid
 
 #define pid_is_launchd(pid) pid == 1
 
@@ -53,6 +53,6 @@
 
 #define proc_cpy(a,b) memcpy(&a, &b, sizeof(ksurface_proc_t))
 
-#define kernel_proc_ &(surface->proc_info.proc[0])
+#define _kernel_proc_obj &(surface->proc_info.obj[0])
 
 #endif /* PROC_DEF_H */

@@ -23,10 +23,7 @@
 #import <Foundation/Foundation.h>
 #import <LindChain/ProcEnvironment/Surface/surface.h>
 
-ksurface_error_t proc_new_proc(pid_t ppid, pid_t pid, uid_t uid, gid_t gid, NSString *executablePath, PEEntitlement entitlement);
-ksurface_error_t proc_new_child_proc(pid_t ppid, pid_t pid, NSString *executablePath);
-
-ksurface_error_t proc_new_proc_v2(pid_t ppid, pid_t pid, uid_t uid, gid_t gid, NSString *executablePath, PEEntitlement entitlement, ksurface_proc_t **proc);
-ksurface_error_t proc_new_child_proc_v2(ksurface_proc_t *parent, pid_t pid, NSString *executablePath, ksurface_proc_t **proc);
+ksurface_error_t proc_new_proc(pid_t pid, uid_t uid, gid_t gid, NSString *executablePath, PEEntitlement entitlement, ksurface_proc_obj_t **obj);
+ksurface_error_t proc_new_child_proc(ksurface_proc_obj_t *parent, pid_t pid, NSString *executablePath, ksurface_proc_obj_t **obj);
 
 #endif /* PROC_NEW_H */
